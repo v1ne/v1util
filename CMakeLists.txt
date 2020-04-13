@@ -1,6 +1,12 @@
 cmake_minimum_required (VERSION 2.6)
-set (CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG=1")
+set(CMAKE_CXX_STANDARD 17)
+add_compile_options("-Wall")
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+add_compile_options("-DDEBUG=1" "-ggdb")
+else()
+add_compile_options("-fomit-frame-pointer")
+endif()
 
 file(GLOB_RECURSE src_files "base/*.cpp" "callable/*.cpp" "container/*.cpp" "debug/*.cpp" "dsp/*.cpp" "src-extra/*.cpp" "stats/*.cpp")
 
@@ -17,6 +23,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
   AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
 target_link_libraries(v1util "-lstdc++fs")
 endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
+  AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS_EQUAL "9")
+target_link_libraries(v1util "-lstdc++fs")
+endif()
+
 
 project (v1util-tests)
 include_directories ("${PROJECT_SOURCE_DIR}/..")
