@@ -68,6 +68,14 @@ important than in my private projects.
 
 ## Notable parts
 
+* `StreamingPeakFinder`: Extract peaks from a stream<br/>
+  Implements a simple greedy algorithm that extracts peaks that dominate (i.e.
+  are bigger in size or the same size and the first) other peaks within a
+  certain window size. Plateaus of same-valued samples are aggreated into the
+  middle element. It is similar to the windowed local maxima, yet still
+  different.
+
+## Building blocks
 * `Delegate`, `Function`: Non-owning and owning references to a Callable<br/>
   `Function` is functionally equivalent to `std::function`, but is often smaller
   and has the potential to support a kind of equality comparison. This is more
