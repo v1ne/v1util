@@ -1,0 +1,14 @@
+[SourceExplorer.ignore]
+.git/
+.vs/
+*.vcxproj
+
+
+#[SearchableFiles.ignore]
+# none
+
+[SearchableFiles.include]
+*.h
+*.hpp
+*.c
+*.cpp
