@@ -70,6 +70,10 @@ class FunctionBase {
   V1_PUBLIC void copyObject(const FunctionBase& other) noexcept;
   V1_PUBLIC static void freeHeapObject(void* pHeapObject) noexcept;
   void setTrampoline(void* pTrampoline, bool hasHeapObject, bool hasEmbeddedStorage) {
+#ifdef V1_OS_POSIX
+    // code alignment has to be ensured manually on that platform
+    V1_ASSERT((uintptr_t(pTrampoline) & kTrampolineStolenBitsMask) == 0);
+#endif
     mpTrampoline = uintptr_t(pTrampoline) | (hasHeapObject ? kHasHeapObjectMask : 0)
                    | (hasEmbeddedStorage ? kUseAddressOfStorage : 0);
   }

@@ -8,6 +8,11 @@ else()
 add_compile_options("-fomit-frame-pointer")
 endif()
 
+if(UNIX)
+# function/delegate require aligned functions in order to steal bits:
+add_compile_options("-falign-functions=4")
+endif()
+
 file(GLOB_RECURSE src_files "base/*.cpp" "callable/*.cpp" "container/*.cpp" "debug/*.cpp" "dsp/*.cpp" "src-extra/*.cpp" "stats/*.cpp")
 
 # Doctest makes touble
