@@ -1,0 +1,49 @@
+---
+# See http://clang.llvm.org/docs/ClangFormatStyleOptions.html for examples
+BasedOnStyle: Chromium
+AlignAfterOpenBracket: 'DontAlign'
+AlignOperands: 'true'
+# clang-format 9: AllowAllArgumentsOnNextLine: 'true'
+# clang-format 9: AllowAllConstructorInitializersOnNextLine: 'true'
+AllowAllParametersOfDeclarationOnNextLine: 'true'
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortCaseLabelsOnASingleLine: 'true'
+AllowShortFunctionsOnASingleLine: 'Inline'
+AllowShortIfStatementsOnASingleLine: 'true'
+# clang-format 9: AllowShortIfStatementsOnASingleLine: 'WithoutElse'
+# clang-format 9: AllowShortLambdasOnASingleLine: 'All'
+AllowShortLoopsOnASingleLine: 'true'
+AlwaysBreakBeforeMultilineStrings: 'true'
+AlwaysBreakTemplateDeclarations: 'true'
+BinPackArguments: 'true'
+BinPackParameters: 'true'
+BreakBeforeBinaryOperators: 'NonAssignment'
+BreakBeforeTernaryOperators: 'true'
+BreakConstructorInitializersBeforeComma: 'true'
+ColumnLimit: '100'
+CompactNamespaces: 'true'
+Cpp11BracedListStyle: 'true'
+DerivePointerAlignment: 'false'
+ExperimentalAutoDetectBinPacking: 'true'
+IncludeBlocks: 'Preserve'
+IndentCaseLabels: 'false'
+IndentPPDirectives: 'AfterHash'
+# clang-format 9: IndentPPDirectives: 'BeforeHash'
+IndentWrappedFunctionNames: 'false'
+KeepEmptyLinesAtTheStartOfBlocks: 'true'
+MaxEmptyLinesToKeep: '2'
+#PenaltyBreakAssignment: '30'
+#PenaltyReturnTypeOnItsOwnLine: '100'
+#PenaltyBreakBeforeFirstCallParameter: '100'
+#PenaltyExcessCharacter: '100'
+SortIncludes: 'true'
+SortUsingDeclarations: 'true'
+# clang-format 9: SpaceBeforeCtorInitializerColon: 'false'
+# clang-format 9: SpaceBeforeInheritanceColon: 'false'
+# clang-format 9: SpaceBeforeRangeBasedForLoopColon: 'false'
+SpaceBeforeParens: Never
+Standard: Cpp11
+TabWidth: '2'
+UseTab: Never
+
+...

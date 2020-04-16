@@ -1,0 +1,236 @@
+.V1UtilDir = '$_WORKING_DIR_$/$_CURRENT_BFF_DIR_$'
+.V1UtilCFlags = ' -I$V1UtilDir$/../ -I$V1UtilDir$/third-party -I$V1UtilDir$/third-party/sltbench/include -DV1_DLLIMPORT_NONO_ITS_STATIC'
+
+{
+  .ProjectName = 'v1util'
+  .ProjectPath = '$V1UtilDir$'
+
+    .ProjectConfigs = {}
+    ForEach( .BuildConfig in .BuildConfigs )
+    {
+        Using( .BuildConfig )
+        .OutputBaseDir + '/$Platform$-$BuildConfigName$'
+
+        // Unity
+        //--------------------------------------------------------------------------
+        Unity( '$ProjectName$-Unity-$Platform$-$BuildConfigName$' )
+        {
+            .UnityInputPath             = {
+                '$ProjectPath$/base',
+                '$ProjectPath$/callable',
+                '$ProjectPath$/container',
+                '$ProjectPath$/debug',
+                '$ProjectPath$/dsp',
+                '$ProjectPath$/stats',
+                '$ProjectPath$/stl-plus',
+                '$ProjectPath$/src-extra',
+              }
+            .UnityOutputPath            = '$OutputBaseDir$/$ProjectName$/'
+            .UnityOutputPattern         = '$ProjectName$_Unity*.cpp'
+            .UnityInputExcludePath      = 'third-party/'
+            .UnityInputExcludePattern   = '*/tst_*.cpp'
+        }
+
+        // Library
+        //--------------------------------------------------------------------------
+        ObjectList( '$ProjectName$-Lib-$Platform$-$BuildConfigName$' )
+        {
+            // Input
+            .CompilerInputUnity         = '$ProjectName$-Unity-$Platform$-$BuildConfigName$'
+
+            .CompilerOptions            + .UseExceptions // iostream -.-
+            .CompilerOptions            + '$V1UtilCFlags$'
+
+            // Output
+            .CompilerOutputPath         = '$OutputBaseDir$/$ProjectName$/'
+        }
+        Alias( '$ProjectName$-$Platform$-$BuildConfigName$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$BuildConfigName$' }
+        ^'Targets_$Platform$_$BuildConfigName$' + { '$ProjectName$-$Platform$-$BuildConfigName$' }
+
+        #if __WINDOWS__
+            .ProjectConfig              = [ Using( .'Project_$Platform$_$BuildConfigName$' ) .Target = '$ProjectName$-$Platform$-$BuildConfigName$' ]
+            ^ProjectConfigs             + .ProjectConfig
+        #endif
+        #if __OSX__
+            .ProjectConfig              = [ .Config = '$BuildConfigName$'   .Target = '$ProjectName$-x64OSX-$BuildConfigName$' ]
+            ^ProjectConfigs             + .ProjectConfig
+        #endif
+    }
+
+    // Aliases
+    //--------------------------------------------------------------------------
+    #include "$GenAliasesBff$"
+
+    // Visual Studio Project Generation
+    //--------------------------------------------------------------------------
+    #if __WINDOWS__
+        VCXProject( '$ProjectName$-proj' )
+        {
+            .ProjectOutput              = '$VsProjectDir$/$ProjectName$.vcxproj'
+            .ProjectInputPaths          = '$ProjectPath$/'
+            .ProjectInputPathsExclude   = {
+                '$ProjectPath$/build'
+                '$ProjectPath$/build-cmake'
+                '$ProjectPath$/build-VS'
+                '$ProjectPath$/third-party'
+              }
+            .ProjectBasePath            = '$ProjectPath$/'
+            .ProjectPatternToExclude    = {'*/tst_*.cpp' '*.bff'}
+        }
+    #endif
+
+    // XCode Project Generation
+    //--------------------------------------------------------------------------
+    #if __OSX__
+        XCodeProject( '$ProjectName$-xcodeproj' )
+        {
+            .ProjectOutput              = '../tmp/XCode/Projects/2_Libs/$ProjectName$.xcodeproj/project.pbxproj'
+            .ProjectInputPaths          = '$ProjectPath$/'
+            .ProjectBasePath            = '$ProjectPath$/'
+
+            .XCodeBuildWorkingDir       = '../../../../Code/'
+        }
+    #endif
+
+  ^IdeLibs + '$ProjectName$'
+}
+
+
+// Test
+{
+    .ProjectName = 'v1util-test'
+    .ProjectPath = '$V1UtilDir$'
+
+    // Executable
+    //--------------------------------------------------------------------------
+    .ProjectConfigs = {}
+    ForEach( .BuildConfig in .BuildConfigs )
+    {
+        Using( .BuildConfig )
+        .OutputBaseDir + '/$Platform$-$BuildConfigName$'
+
+        // Unity
+        //--------------------------------------------------------------------------
+        Unity( '$ProjectName$-Unity-$Platform$-$BuildConfigName$' )
+        {
+            .UnityInputPath             = {
+                '$ProjectPath$/base',
+                '$ProjectPath$/callable',
+                '$ProjectPath$/container',
+                '$ProjectPath$/debug',
+                '$ProjectPath$/dsp',
+                '$ProjectPath$/stats',
+                '$ProjectPath$/stl-plus',
+                '$ProjectPath$/src-extra',
+              }
+
+            .UnityInputPattern          = 'tst_*.cpp'
+            .UnityInputExcludePattern   = '*/tst_main.cpp'
+            .UnityOutputPath            = '$OutputBaseDir$/$ProjectName$/'
+            .UnityOutputPattern         = '$ProjectName$_Unity*.cpp'
+        }
+
+        // Library
+        //--------------------------------------------------------------------------
+        ObjectList( '$ProjectName$-Lib-$Platform$-$BuildConfigName$' )
+        {
+            // Input (Unity)
+            .CompilerInputUnity         = '$ProjectName$-Unity-$Platform$-$BuildConfigName$'
+            .CompilerInputFiles         = {
+              '$ProjectPath$/src-extra/tst_main.cpp', // doctest + #define woes
+            }
+
+            // Extra Compiler Options
+            .CompilerOptions            + .UseExceptions // Test framework uses exceptions
+            .CompilerOptions            + '$V1UtilCFlags$'
+
+            // Output
+            .CompilerOutputPath         = '$OutputBaseDir$/$ProjectName$/'
+        }
+
+        // Executable
+        //--------------------------------------------------------------------------
+        Executable( '$ProjectName$-Exe-$Platform$-$BuildConfigName$' )
+        {
+            .Libraries = {
+              'v1util-Lib-$Platform$-$BuildConfigName$'
+              'v1util-test-Lib-$Platform$-$BuildConfigName$'
+            }
+
+            .LinkerOutput                   = '$OutputBaseDir$/$ProjectName$/$ProjectName$$ExeExtension$'
+            #if __WINDOWS__
+                .LinkerOptions                  + ' /SUBSYSTEM:CONSOLE'
+                                                + ' Advapi32.lib'
+                                                + ' kernel32.lib'
+                                                + ' Ws2_32.lib'
+                                                + ' User32.lib'
+                                                + .CRTLibs_Static
+            #endif
+            #if __LINUX__
+                .LinkerOptions                  + ' -pthread -lrt'
+            #endif
+        }
+        Alias( '$ProjectName$-$Platform$-$BuildConfigName$' ) { .Targets = '$ProjectName$-Exe-$Platform$-$BuildConfigName$' }
+        ^'Targets_$Platform$_$BuildConfigName$' + { '$ProjectName$-$Platform$-$BuildConfigName$' }
+
+        // Run Test
+        //--------------------------------------------------------------------------
+        Test( "$ProjectName$-RunTest-$Platform$-$BuildConfigName$" )
+        {
+            .TestExecutable                 = '$ProjectName$-Exe-$Platform$-$BuildConfigName$'
+            .TestOutput                     = "$OutputBaseDir$/$ProjectName$/test-output.txt"
+            .TestTimeOut                    = 300
+        }
+
+        #if __WINDOWS__
+            .ProjectConfig              = [
+                Using( .'Project_$Platform$_$BuildConfigName$' )
+                .Target = '$ProjectName$-Lib-$Platform$-$BuildConfigName$'
+                .LocalDebuggerCommand = '$OutputBaseDir$/$ProjectName$/$ProjectName$$ExeExtension$'
+              ]
+            ^ProjectConfigs             + .ProjectConfig
+        #endif
+        #if __OSX__
+            .ProjectConfig              = [ .Config = '$BuildConfigName$'   .Target = '$ProjectName$-x64OSX-$BuildConfigName$' ]
+            ^ProjectConfigs             + .ProjectConfig
+        #endif
+    }
+
+    // Aliases
+    //--------------------------------------------------------------------------
+    #include "$GenAliasesBff$"
+
+    // Visual Studio Project Generation
+    //--------------------------------------------------------------------------
+    #if __WINDOWS__
+        VCXProject( '$ProjectName$-proj' )
+        {
+            .ProjectOutput              = '$VsProjectDir$/$ProjectName$.vcxproj'
+            .ProjectInputPaths          = '$ProjectPath$/'
+            .ProjectInputPathsExclude   = {
+                '$ProjectPath$/build'
+                '$ProjectPath$/build-cmake'
+                '$ProjectPath$/build-VS'
+                '$ProjectPath$/fbuild-infrastructure'
+                '$ProjectPath$/third-party'
+              }
+            .ProjectBasePath            = '$ProjectPath$/'
+            .ProjectPatternToExclude    = {'*.natvis', '*.bff'}
+        }
+    #endif
+
+    // XCode Project Generation
+    //--------------------------------------------------------------------------
+    #if __OSX__
+        XCodeProject( '$ProjectName$-xcodeproj' )
+        {
+            .ProjectOutput              = '../tmp/XCode/Projects/1_Test/$ProjectName$.xcodeproj/project.pbxproj'
+            .ProjectInputPaths          = '$ProjectPath$/'
+            .ProjectBasePath            = '$ProjectPath$/'
+
+            .XCodeBuildWorkingDir       = '../../../../Code/'
+        }
+    #endif
+
+  ^IdeTests + '$ProjectName$'
+}

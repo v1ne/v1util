@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="v1util::ArrayView&lt;*&gt;">
+    <DisplayString Condition="mpEnd == mpBegin">(empty)</DisplayString>
+    <DisplayString Condition="mpEnd != mpBegin">{{ size={mpEnd - mpBegin} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">mpEnd - mpBegin</Item>
+      <ArrayItems>
+        <Size>mpEnd - mpBegin</Size>
+        <ValuePointer>mpBegin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="v1util::Span&lt;*&gt;">
+    <DisplayString Condition="mpEnd == mpBegin">(empty)</DisplayString>
+    <DisplayString Condition="mpEnd != mpBegin">{{ size={mpEnd - mpBegin} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">mpEnd - mpBegin</Item>
+      <ArrayItems>
+        <Size>mpEnd - mpBegin</Size>
+        <ValuePointer>mpBegin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="v1util::Delegate&lt;*&gt;">
+    <DisplayString Condition="!mpTrampoline">(empty)</DisplayString>
+    <DisplayString Condition="mpTrampoline">{mpTrampoline} on {mpObject}</DisplayString>
+    <Expand>
+      <Item Name="trampoline" ExcludeView="simple">mpTrampoline</Item>
+      <Item Name="object" ExcludeView="simple">mpObject</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

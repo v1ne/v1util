@@ -1,0 +1,9 @@
+.IdeSlnName = 'v1util'
+.MyMsvcClFlags = ' /fp:fast'
+.MsvcRt = 'MT' ; static linking suffices for tests and so on
+
+#include "fbuild-infrastructure/fbuild.bff"
+
+#include "v1util.bff"
+
+#include "fbuild-infrastructure/all-boilerplatery.bff"

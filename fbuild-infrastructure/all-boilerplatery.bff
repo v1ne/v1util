@@ -1,0 +1,272 @@
+// Copyright © 2012-2020 Franta Fulin
+//
+// This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software.
+//
+// 2. If you use this software, in source or binary form, an acknowledgment in the product documentation or credits would be appreciated but is not required. Example: "This product uses FASTBuild © 2012-2020 Franta Fulin."
+//
+// 3. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+//
+// 4. This notice may not be removed or altered from any source distribution.
+
+
+// Aliases : All-$Platform$-$Config$
+//------------------------------------------------------------------------------
+ForEach( .BuildConfig in .BuildConfigs )
+{
+    Using( .BuildConfig )
+
+    Alias( 'All-$Platform$-$BuildConfigName$' ) { .Targets = .'Targets_$Platform$_$BuildConfigName$' }
+}
+
+// Aliases : All-$Platform$
+//------------------------------------------------------------------------------
+.Platforms = { 'x64', 'x64Clang', 'x64Linux', 'x64ClangLinux', 'x64OSX' }
+.PlatformConfigs_x64           = { 'Debug', 'Analyze', 'Profile', 'Release' }
+.PlatformConfigs_x64Clang      = { 'Debug', 'Profile', 'Release' }
+.PlatformConfigs_x64Linux      = { 'Debug', 'Profile', 'Release', 'ASan', 'TSan' }
+.PlatformConfigs_x64ClangLinux = { 'Debug', 'Profile', 'Release' }
+#if USING_CLANG_6
+                               + { 'ASan', 'MSan', 'TSan' }
+#endif
+.PlatformConfigs_x64OSX        = { 'Debug', 'Profile', 'Release' }
+ForEach( .Platform in .Platforms )
+{
+    Alias( 'All-$Platform$' )
+    {
+        .Targets = {}
+        ForEach( .Config in .'PlatformConfigs_$Platform$' )
+        {
+            ^Targets + { 'All-$Platform$-$Config$' }
+        }
+    }
+}
+
+// Aliases : All
+//------------------------------------------------------------------------------
+#if __WINDOWS__
+    Alias( 'All' )
+    {
+        .Targets        = { 'All-x64' }
+#if USE_CLANG_ON_WINDOWS
+                        + { 'All-x64Clang' }
+#endif
+    }
+#endif
+#if __OSX__
+    Alias( 'All' )
+    {
+        .Targets        = { 'All-x64OSX' }
+    }
+#endif
+#if __LINUX__
+    Alias( 'All' )
+    {
+        .Targets        = { 'All-x64Linux',
+                            'All-x64ClangLinux'
+                          }
+    }
+#endif
+
+//------------------------------------------------------------------------------
+.TestConfigurations = {'Debug', 'Release'}
+#if __WINDOWS__
+.TestArch = "x64"
+#endif
+#if __OSX__
+.TestArch = "x64OSX"
+#endif
+#if __LINUX__
+.TestArch = "x64Linux"
+#endif
+Alias( 'Tests' )
+{
+    .Targets = {}
+    ForEach(.Config in .TestConfigurations) {
+      .Targets = {}
+      ForEach(.TestProj in .IdeTests) {
+        ^Targets + '$TestProj$-RunTest-$TestArch$-$Config$'
+      }
+      ^Targets + .Targets
+    }
+}
+
+// Visual Studio Solution
+//------------------------------------------------------------------------------
+#if __WINDOWS__
+    // Project to compile everything
+    VCXProject( 'All-proj' )
+    {
+        .ProjectOutput              = '$VsProjectDir$/all.vcxproj'
+        .ProjectFiles           = { '.\fbuild.bff' }
+        .ProjectBasePath            = '.\'
+
+        //.ProjectConfigs             = .AllProjectConfigs_x64
+
+        .ProjectConfigs = {}
+        ForEach( .BuildConfig in.BuildConfigs )
+        {
+            Using( .BuildConfig )
+            .ProjectConfig          = [ Using( .'Project_$Platform$_$BuildConfigName$' ) .Target = 'All-$Platform$-$BuildConfigName$' ]
+            ^ProjectConfigs         + .ProjectConfig
+        }
+    }
+
+    // Project for Platform/Compiler SDKs
+    VCXProject( 'SDKs-proj' )
+    {
+        .ProjectOutput              = '$VsProjectDir$/SDKs.vcxproj'
+        .ProjectInputPaths          = '$_WORKING_DIR_$/'
+        .ProjectAllowedFileExtensions = '*.bff'
+        .ProjectBasePath            = .ProjectInputPaths
+
+        .ProjectConfigs = {}
+        ForEach( .BuildConfig in.BuildConfigs )
+        {
+            Using( .BuildConfig )
+            .ProjectConfig          = [ Using( .'Project_$Platform$_$BuildConfigName$' ) ]
+            ^ProjectConfigs         + .ProjectConfig
+        }
+    }
+
+    // Project to regenerate projects/solutions
+    VCXProject( 'UpdateSolution-proj' )
+    {
+        .ProjectOutput              = '$VsProjectDir$/UpdateSolution.vcxproj'
+        .ProjectFiles           = { '.\fbuild.bff' }
+        .ProjectBasePath            = '.\'
+
+        .GenerateProjectsCommands =
+        [
+            .ProjectBuildCommand        = 'cd ^$(SolutionDir)\..\..\..\ &amp; fbuild solution -vs'
+            .ProjectRebuildCommand      = 'cd ^$(SolutionDir)\..\..\..\ &amp; fbuild solution -vs -clean'
+        ]
+
+        .ProjectConfigs = {}
+        ForEach( .BuildConfig in.BuildConfigs )
+        {
+            Using( .BuildConfig )
+            .ProjectConfig          = [ Using( .'Project_$Platform$_$BuildConfigName$' ) Using( .GenerateProjectsCommands ) ]
+            ^ProjectConfigs         + .ProjectConfig
+        }
+    }
+
+    VSSolution( 'solution' )
+    {
+        .SolutionOutput     = '$IdeBaseDir$/win/$IdeSlnName$.sln'
+        .SolutionProjects   = { 'All-proj',
+                                'UpdateSolution-proj',
+                              }
+        .SolutionBuildProject = 'All-proj'
+        .SolutionConfigs = {}
+
+        .HasExecutable = false;
+        .VsIdeExecutables = {}
+        ForEach(.Proj in .IdeExecutables) {
+          ^HasExecutable = true
+          ^VsIdeExecutables + '$Proj$-proj'
+        }
+
+        .HasLib = false;
+        .VsIdeLibs = {}
+        ForEach(.Proj in .IdeLibs) {
+          ^HasLib = true
+          ^VsIdeLibs + '$Proj$-proj'
+        }
+
+        .HasTest = false;
+        .VsIdeTests = {}
+        ForEach(.Proj in .IdeTests) {
+          ^HasTest = true
+          ^VsIdeTests + '$Proj$-proj'
+        }
+
+        ForEach( .BuildConfig in .BuildConfigs )
+        {
+            Using( .BuildConfig )
+            .SolutionConfig         = [ Using( .'Project_$Platform$_$BuildConfigName$' ) ]
+            ^SolutionConfigs        + .SolutionConfig
+        }
+
+        .SolutionVisualStudioVersion = '$VS_SolutionVersion$'
+
+        // Work around for Visual Studio F5 behaviour up-to-date check
+        .Deps               = [
+                                .Projects = .VsIdeLibs + .VsIdeTests + .VsIdeExecutables
+                                .Dependencies = { 'All-proj' }
+                              ]
+        .SolutionDependencies = { .Deps }
+
+        .Folder_99_External = [
+            .Path           = '99. External'
+            .Projects       = { 'SDKs-proj' }
+        ]
+        .SolutionFolders = { .Folder_99_External}
+
+        .Folder_1_Executables = [
+            .Path           = '1. Executables'
+            .Projects = .VsIdeExecutables
+        ]
+        If(.HasExecutable) {
+          ^SolutionFolders + .Folder_1_Executables
+        }
+
+        .Folder_2_Test = [
+            .Path           = '2. Test'
+            .Projects = .VsIdeTests
+        ]
+        If(.HasTest) {
+          ^SolutionFolders + .Folder_2_Test
+        }
+        .Folder_3_Libs = [
+            .Path           = '3. Libs'
+            .Projects = .VsIdeLibs
+        ]
+        If(.HasLib) {
+          ^SolutionFolders + .Folder_3_Libs
+        }
+    }
+#endif
+
+//------------------------------------------------------------------------------
+// XCode Project Generation
+//------------------------------------------------------------------------------
+#if __OSX__
+    XCodeProject( 'xcode' )
+    {
+        .ProjectOutput              = '$IdeBaseDir$/mac/$IdeSlnName$.xcodeproj/project.pbxproj'
+        .ProjectBasePath            = '$IdeBaseDir$/mac/Projects/'
+
+        .XCodeBuildWorkingDir       = '../../../Code/'
+
+
+        .XcIdeExecutables = {}
+        ForEach(.Proj in .IdeExecutables) {
+          ^XcIdeExecutables + '$Proj$-xcodeproj'
+        }
+
+        .XcIdeLibs = {}
+        ForEach(.Proj in .IdeLibs) {
+          ^XcIdeLibs + '$Proj$-xcodeproj'
+        }
+
+        .XcIdeTests = {}
+        ForEach(.Proj in .IdeTests) {
+          ^XcIdeTests + '$Proj$-xcodeproj'
+        }
+
+        .ProjectFiles = .XcIdeLibs + .XcIdeTests + .XcIdeExecutables
+        .ProjectConfigs = {}
+        ForEach( .BuildConfig in.BuildConfigs )
+        {
+            Using( .BuildConfig )
+            .ProjectConfig          = [ .Config = '$BuildConfigName$' .Target = 'All-x64OSX-$BuildConfigName$' ]
+            ^ProjectConfigs         + .ProjectConfig
+        }
+    }
+#endif
+
+//------------------------------------------------------------------------------
