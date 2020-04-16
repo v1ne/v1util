@@ -18,14 +18,16 @@ include_directories ("${PROJECT_SOURCE_DIR}/..")
 set(v1util_srcs ${src_files})
 list(FILTER v1util_srcs EXCLUDE REGEX "tst_.*\\.cpp")
 add_library(v1util ${v1util_srcs})
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
-  AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7"
-  AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
-target_link_libraries(v1util "-lstdc++fs")
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
-  AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS_EQUAL "9")
-target_link_libraries(v1util "-lstdc++fs")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
+  target_link_libraries(v1util "-lstdc++fs")
+  endif()
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS_EQUAL "9")
+  target_link_libraries(v1util "-lstdc++fs")
+  endif()
 endif()
 
 
