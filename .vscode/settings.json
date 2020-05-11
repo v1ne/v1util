@@ -1,0 +1,19 @@
+{
+  "[cpp]": {
+    "editor.rulers": [
+      100
+    ],
+  },
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.defines": [],
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/..",
+    "${workspaceFolder}/third-party",
+    "."
+  ],
+  "cmake.buildDirectory": "${workspaceRoot}/build-cmake",
+  "cmake.configureSettings": {
+    "CMAKE_UNITY_BUILD": 1
+  },
+  "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+}
