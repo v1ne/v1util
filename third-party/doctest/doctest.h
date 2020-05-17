@@ -469,7 +469,7 @@ class DOCTEST_INTERFACE String
 
     bool isOnStack() const { return (buf[last] & 128) == 0; }
     void setOnHeap();
-    void setLast(unsigned in = last);
+    void setLast(unsigned in);
 
     void copy(const String& other);
 
@@ -3043,7 +3043,7 @@ void String::copy(const String& other) {
 
 String::String() {
     buf[0] = '\0';
-    setLast();
+    setLast(0);
 }
 
 String::~String() {
@@ -3137,7 +3137,7 @@ String::String(String&& other) {
     using namespace std;
     memcpy(buf, other.buf, len);
     other.buf[0] = '\0';
-    other.setLast();
+    other.setLast(0);
 }
 
 String& String::operator=(String&& other) {
@@ -3147,7 +3147,7 @@ String& String::operator=(String&& other) {
             delete[] data.ptr;
         memcpy(buf, other.buf, len);
         other.buf[0] = '\0';
-        other.setLast();
+        other.setLast(0);
     }
     return *this;
 }
