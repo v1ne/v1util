@@ -4,6 +4,7 @@
 #include "v1util/base/debug.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <numeric>
 
 
@@ -71,6 +72,15 @@ auto makeConstRange(const Container& container) {
 }
 
 /************ own  A L G O R I T H M S , in alphabetical order *****************/
+
+template <typename RangeA, typename RangeB, typename T>
+inline bool approxEqual(RangeA&& rangeA, RangeB&& rangeB, T epsilon) {
+  return std::equal(
+      rangeA.begin(), rangeA.end(), rangeB.begin(), rangeB.end(), [=](auto&& a, auto&& b) {
+        return std::abs(a - b) < epsilon * (1 + std::max<T>(std::abs(a), std::abs(b)));
+      });
+}
+
 
 template <typename Range, typename Element>
 inline bool contains(const Range& haystack, const Element& needle) {

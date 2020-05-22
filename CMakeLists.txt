@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options("-Wall")
+add_compile_options("-Wall" "-Wno-multichar")
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 add_compile_options("-DDEBUG=1" "-ggdb")
