@@ -2,6 +2,7 @@
 
 #include "v1util/base/macromagic.hpp"
 #include "v1util/base/platform.hpp"
+#include "v1util/stl-plus/filesystem-fwd.hpp"
 
 #include <stddef.h>
 #include <cstdint>
@@ -12,8 +13,7 @@ V1_PUBLIC void init(size_t bufferCapacityB);
 V1_PUBLIC void destroy();
 V1_PUBLIC void setStarted(bool started);
 V1_PUBLIC bool started();
-V1_PUBLIC void finishAndWriteToPathPrefix(const char* pPathPrefix);
-V1_PUBLIC void finishAndWriteToTempFile(const char* pFilenamePrefix);
+V1_PUBLIC stdfs::path finishAndWriteToPathPrefix(const stdfs::path& pathPrefix);
 
 struct Status {
   bool initialized : 1;

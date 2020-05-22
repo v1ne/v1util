@@ -43,7 +43,7 @@ bool started() {
   return gWasStarted;
 }
 
-void finishAndWriteToPath(const stdfs::path& pathPrefix) {
+stdfs::path finishAndWriteToPathPrefix(const stdfs::path& pathPrefix) {
   const auto printLine = [](const char* pString, void* context) {
     *((std::ofstream*)context) << pString;
   };
@@ -72,14 +72,8 @@ void finishAndWriteToPath(const stdfs::path& pathPrefix) {
   file.close();
 
   spdr_reset(gSpdrContext);
-}
 
-void finishAndWriteToPathPrefix(const char* pPathPrefix) {
-  finishAndWriteToPath(stdfs::path(pPathPrefix));
-}
-
-void finishAndWriteToTempFile(const char* pFilenamePrefix) {
-  finishAndWriteToPath(stdfs::temp_directory_path() / stdfs::path(pFilenamePrefix));
+  return path;
 }
 
 Status status() {
@@ -102,10 +96,11 @@ namespace detail {
 SPDR_Event_Arg toSpdrArg(const TraceArg& Arg) {
   switch(Arg.Type) {
   case TraceArg::kStaticString: return uu_spdr_arg_make_str(Arg.pKey, Arg.pDynamicString);
-  case TraceArg::kInt64: return uu_spdr_arg_make_int(Arg.pKey, int(Arg.intNumber)); break;
+  case TraceArg::kInt64: return uu_spdr_arg_make_int(Arg.pKey, int(Arg.intNumber));
   case TraceArg::kDouble: return uu_spdr_arg_make_double(Arg.pKey, Arg.fpNumber);
   }
-  return {};  // invalid
+  SPDR_Event_Arg invalidArg = {};
+  return invalidArg;
 }
 
 
