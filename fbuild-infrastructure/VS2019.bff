@@ -16,7 +16,7 @@
 // Visual Studio 2019
 //------------------------------------------------------------------------------
 .VS2019_BasePath         = 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community'
-.VS2019_Version          = '14.25.28610'
+.VS2019_Version          = '14.26.28801'
 
 // X64 Compiler
 //------------------------------------------------------------------------------
@@ -93,6 +93,8 @@ Compiler( 'Compiler-VS2019-x64' )
                                     + ' /wd5039' // '%s': pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
                                     + ' /wd5045' // Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
                                     + ' /wd5204' // '%s': class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from this class may not be destructed correctly
+                                    + ' /wd26812' // The enum type '%s' is unscoped. Prefer 'enum class' over 'enum' (Enum.3).
+
 
                                     // my options:
                                     + ' /JMC /std:c++17'
