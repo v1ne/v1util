@@ -1,19 +1,12 @@
 #include "tracing.hpp"
 
 #include "v1util/base/warnings.hpp"
+#include "v1util/stl-plus/filesystem.hpp"
 
 #include <stdio.h>
 #include <time.h>
 #include <fstream>
 #include <iostream>
-
-#ifdef __GNUG__
-#  include <experimental/filesystem>
-namespace stdfs = std::experimental::filesystem;
-#else
-#  include <filesystem>
-namespace stdfs = std::filesystem;
-#endif
 
 extern "C" {
 V1_NO_WARNINGS
