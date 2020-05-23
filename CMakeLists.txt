@@ -13,7 +13,7 @@ if(UNIX)
 add_compile_options("-falign-functions=4")
 endif()
 
-file(GLOB_RECURSE src_files "base/*.cpp" "callable/*.cpp" "container/*.cpp" "debug/*.cpp" "dsp/*.cpp" "src-extra/*.cpp" "stats/*.cpp")
+file(GLOB_RECURSE src_files "base/*.cpp" "callable/*.cpp" "container/*.cpp" "debug/*.cpp" "dsp/*.cpp" "stl-plus/*.cpp" "src-extra/*.cpp" "stats/*.cpp")
 
 # Doctest makes touble
 set_source_files_properties(src-extra/tst_main.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION TRUE)

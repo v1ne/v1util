@@ -11,3 +11,15 @@ namespace stdfs = std::experimental::filesystem;
 #  include <filesystem>
 namespace stdfs = std::filesystem;
 #endif
+
+#include <string_view>
+
+namespace v1util {
+//! @return the absolute path to the v1util source repository or an empty path.
+stdfs::path repoPath();
+//! @return the absolute path to the v1util test files or an empty path.
+stdfs::path testFilesPath();
+
+//! Generates prefix + (something) + suffix so that the result doesn't exist.
+stdfs::path unique_path(stdfs::path prefix, std::string_view suffix);
+}  // namespace v1util
