@@ -3,6 +3,8 @@
 #include "platform.hpp"
 
 #if defined(V1_OS_WIN)
+#  include "alloca.hpp"
+
 #  include <Windows.h>
 #  undef min
 #  undef max
@@ -47,13 +49,12 @@ void printfToDebugger(const char* pFormat...) {
   if(isDebuggerPresent()) {
 
     const auto bufSize = size_t(_vscprintf(pFormat, args)) + 2;
-    const auto pBuf = (char*)_malloca(bufSize);
+    const auto pBuf = (char*)V1_ALLOCA(bufSize);
     V1_ASSUME(pBuf);
     auto written = vsnprintf(pBuf, bufSize, pFormat, args);
     *(pBuf + written) = '\n';
     *(pBuf + written + 1) = '\0';
     ::OutputDebugStringA(pBuf);
-    _freea(pBuf);
   }
   va_end(args);
 }

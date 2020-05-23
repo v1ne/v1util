@@ -1,5 +1,6 @@
 #include "thread.hpp"
 
+#include "alloca.hpp"
 #include "debug.hpp"
 #include "platform.hpp"
 
@@ -45,12 +46,11 @@ void Thread::setName(std::string_view name) {
   }
 
   const auto nameSize = int(name.size() + 1);
-  auto pWName = (wchar_t*)malloc(2 * nameSize);
+  auto pWName = (wchar_t*)V1_ALLOCA(2 * nameSize);
   if(pWName && ::MultiByteToWideChar(CP_UTF8, 0, name.data(), nameSize, pWName, nameSize)) {
     ::SetThreadDescription(::GetCurrentThread(), pWName);
   } else
     V1_INVALID();
-  free(pWName);
 }
 
 #elif defined(V1_OS_POSIX)
@@ -64,7 +64,7 @@ void yield() {
 }
 
 void Thread::setName(std::string_view name) {
-  auto pBuf = (char*)alloca(name.size() + 1);
+  auto pBuf = (char*)V1_ALLOCA(name.size() + 1);
   memcpy(pBuf, name.data(), name.size());
   pBuf[name.size()] = '\0';
 #  if defined(V1_OS_LINUX)
