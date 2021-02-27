@@ -1,5 +1,5 @@
 #pragma once
-
+#include <filesystem>
 #include "v1util/base/warnings.hpp"
 
 /*
@@ -7,6 +7,9 @@
  * kitchen sink:
  *   algorithm, chrono, iomanip, list, locale, memory, string, string_view, system_error, utility,
  *   vector
+ *
+ * On GCC libstdc++, using fs_fwd.h could do the trick, too. It's more light-weight, only including
+ * chrono and system_error.
  *
  * Caveat emptor: Forward-declaring elements of the STL namespace is forbidden by the standard.
  * Of course. But since this is not a production code base, I can get away with ignoring this
@@ -16,10 +19,13 @@
 
 #ifdef __GNUG__
 
-namespace std::experimental::filesystem { inline namespace v1 { inline namespace __cxx11 {
+namespace std::filesystem {
+inline namespace __cxx11 {
 class path;
-}}}  // namespace std::experimental::filesystem::v1::__cxx11
-namespace stdfs = std::experimental::filesystem;
+}
+
+using path = __cxx11::path;
+}  // namespace std::filesystem
 
 #else
 
@@ -28,6 +34,5 @@ namespace std::filesystem {
 class path;
 }
 V1_RESTORE_WARNINGS
-namespace stdfs = std::filesystem;
 
 #endif

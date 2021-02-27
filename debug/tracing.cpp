@@ -43,7 +43,7 @@ bool started() {
   return gWasStarted;
 }
 
-stdfs::path finishAndWriteToPathPrefix(const stdfs::path& pathPrefix) {
+std::filesystem::path finishAndWriteToPathPrefix(const std::filesystem::path& pathPrefix) {
   const auto printLine = [](const char* pString, void* context) {
     *((std::ofstream*)context) << pString;
   };

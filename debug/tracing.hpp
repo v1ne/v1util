@@ -13,7 +13,7 @@ V1_PUBLIC void init(size_t bufferCapacityB);
 V1_PUBLIC void destroy();
 V1_PUBLIC void setStarted(bool started);
 V1_PUBLIC bool started();
-V1_PUBLIC stdfs::path finishAndWriteToPathPrefix(const stdfs::path& pathPrefix);
+V1_PUBLIC std::filesystem::path finishAndWriteToPathPrefix(const std::filesystem::path& pathPrefix);
 
 struct Status {
   bool initialized : 1;

@@ -25,13 +25,12 @@ list(FILTER v1util_srcs EXCLUDE REGEX "tst_.*\\.cpp")
 add_library(v1util ${v1util_srcs})
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
-    AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7"
-    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
-  target_link_libraries(v1util "-lstdc++fs")
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10")
+      message( FATAL_ERROR "Please upgrade to GCC 10." )
   endif()
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS_EQUAL "9")
-  target_link_libraries(v1util "-lstdc++fs")
+      target_link_libraries(v1util "-lstdc++fs")
   endif()
 endif()
 

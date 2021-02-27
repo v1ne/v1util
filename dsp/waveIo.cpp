@@ -16,7 +16,7 @@ inline FILE* toFile(void* pFile) {
   return (FILE*)pFile;
 }
 
-FILE* openWave(const stdfs::path& path, bool forWriting, bool overwrite) {
+FILE* openWave(const std::filesystem::path& path, bool forWriting, bool overwrite) {
   FILE* pFile = nullptr;
 #if defined(V1_OS_WIN)
   auto ret =
@@ -268,7 +268,7 @@ bool convertInterleaveWrite(ConstAudioBlock source, Span<T> buffer, FILE* pTarge
 }  // namespace
 
 
-WaveReader::WaveReader(const stdfs::path& filename)
+WaveReader::WaveReader(const std::filesystem::path& filename)
     : WaveReader(openWave(filename, !K(forWriting), !K(overwriteExistingFile))) {}
 
 WaveReader::WaveReader(FILE* pFile) {
@@ -283,7 +283,7 @@ WaveReader::~WaveReader() {
   if(mpFile) ::fclose(toFile(mpFile));
 }
 
-WaveInfo WaveReader::taste(const stdfs::path& filename) {
+WaveInfo WaveReader::taste(const std::filesystem::path& filename) {
   auto pFile = openWave(filename, !K(forWriting), !K(overwriteExistingFile));
   if(!pFile) return {};
 
@@ -367,7 +367,7 @@ FILE* WaveReader::release() {
 /******************************************************************************/
 
 WaveWriter::WaveWriter(
-    const stdfs::path& filename, const WaveInfo& info, bool overwriteExistingFile)
+    const std::filesystem::path& filename, const WaveInfo& info, bool overwriteExistingFile)
     : WaveWriter(openWave(filename, K(forWriting), overwriteExistingFile), info) {}
 
 

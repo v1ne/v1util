@@ -26,7 +26,7 @@ struct WaveInfo {
  */
 class WaveReader {
  public:
-  WaveReader(const stdfs::path& filename);
+  WaveReader(const std::filesystem::path& filename);
   WaveReader(FILE* pFile);
 
   WaveReader() = default;
@@ -37,7 +37,7 @@ class WaveReader {
   ~WaveReader();
 
   //! Returns what opening @p filename as a Wave file would yield.
-  static WaveInfo taste(const stdfs::path& filename);
+  static WaveInfo taste(const std::filesystem::path& filename);
 
   inline bool isOpen() const { return mpFile; }
   inline const WaveInfo& format() const { return mInfo; }
@@ -64,8 +64,8 @@ class WaveReader {
  */
 class WaveWriter {
  public:
-  WaveWriter(
-      const stdfs::path& filename, const WaveInfo& format, bool overwriteExistingFile = false);
+  WaveWriter(const std::filesystem::path& filename, const WaveInfo& format,
+      bool overwriteExistingFile = false);
   WaveWriter(FILE* pFile, const WaveInfo& format);
 
   WaveWriter() = default;
