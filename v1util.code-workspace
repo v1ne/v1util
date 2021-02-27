@@ -78,7 +78,8 @@
       "typeindex": "cpp",
       "typeinfo": "cpp",
       "variant": "cpp",
-      "filesystem": "cpp"
+      "filesystem": "cpp",
+      "spdr.h": "c"
     }
   }
 }

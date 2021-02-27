@@ -13,7 +13,11 @@ extern "C" {
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include <unistd.h>
-#  include <x86intrin.h>  // GCC
+#  ifdef V1_ARCH_X86
+#    include <x86intrin.h>  // GCC
+#  else
+#    include <time.h>
+#  endif
 }
 #elif defined(V1_OS_FREEBSD)
 extern "C" {
@@ -53,7 +57,7 @@ uint64_t tscStamp() {
 
 // for normal clock: GetSystemTimePreciseAsFileTime
 
-#elif defined(V1_OS_POSIX)
+#elif defined(V1_OS_POSIX) && defined(V1_ARCH_X86)
 
 int64_t tscTicksPerSecond() {
   static const auto sTicksPerSecond = []() -> int64_t {
@@ -88,7 +92,7 @@ int64_t tscTicksPerSecond() {
     V1_DEBUGBREAK();
     return 0;
 #  else
-#    error unknown platform
+#    error unknown OS
 #  endif
   }();
   return sTicksPerSecond;
@@ -99,8 +103,19 @@ uint64_t tscStamp() {
   return __rdtsc();
 }
 
+#elif defined(V1_OS_POSIX) && defined(V1_ARCH_ARM)
+
+int64_t tscTicksPerSecond() {
+  return 1'000'000'000LL;
+}
+
+uint64_t tscStamp() {
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+  return uint64_t(int64_t(ts.tv_sec) * 1'000'000'000 + ts.tv_nsec);
+}
 #else
-#  error unknown platform
+#  error unsupported platform
 #endif
 
 

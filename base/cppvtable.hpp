@@ -18,7 +18,8 @@ UntypedMemberFnCall resolveUntypedMemberFn(
   static_assert(
       std::is_base_of_v<MemberClass, Class>, "Member function must belong to class or base");
   auto pMemberClass = static_cast<MemberClass*>(pClass);
-#ifdef V1_OS_WIN
+#ifdef V1_ARCH_X86
+#  ifdef V1_OS_WIN
   if constexpr(sizeof(memfun) == sizeof(void*)) {
     return UntypedMemberFnCall{(void*)pMemberClass, (void*)*(uintptr_t*)(void*)&memfun};
   } else if constexpr(sizeof(memfun) == 2 * sizeof(void*)) {
@@ -33,7 +34,7 @@ UntypedMemberFnCall resolveUntypedMemberFn(
   } else {
     static_assert(false, "unsupported inheritance mode");
   }
-#elif defined(V1_OS_POSIX)
+#  elif defined(V1_OS_POSIX)
   static_assert(sizeof(memfun) == 2 * sizeof(void*));
   // Itanium ABI is used on most Unix systems
   struct ItaniumMemFn {
@@ -51,8 +52,26 @@ UntypedMemberFnCall resolveUntypedMemberFn(
     return UntypedMemberFnCall{
         (void*)((intptr_t)pMemberClass + pMemFn->thisOffset), (void*)pMemFn->pFuncOrOffset};
   }
+#  else
+#    error unsupported OS
+#  endif
+#elif defined(V1_ARCH_ARM) && defined(V1_OS_POSIX)
+  static_assert(sizeof(memfun) == 2 * sizeof(void*));
+  struct MemFnLayout {
+    intptr_t pFuncOrOffset;
+    intptr_t isVirtual;
+  };
+  auto pMemFn = (const MemFnLayout*)(void*)&memfun;
+  void* pFunction;
+  if(pMemFn->isVirtual) {
+    auto pVtbl = *(void***)pMemberClass;
+    pFunction = (pVtbl)[(pMemFn->pFuncOrOffset) / sizeof(void*)];
+  } else {
+    pFunction = (void*)pMemFn->pFuncOrOffset;
+  }
+  return UntypedMemberFnCall{(void*)((intptr_t)pMemberClass), pFunction};
 #else
-#  error unsupported platform
+#  error unsupported CPU architecture
 #endif
 }
 

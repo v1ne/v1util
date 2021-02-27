@@ -25,7 +25,6 @@
 #  define _V1_ASSUME(pred) __assume(pred)
 
 #elif V1_OS_POSIX
-#  define V1_DEBUGBREAK() __asm__("int3")
 #  if defined(DEBUG) || !defined(NDEBUG)
 #    define V1_DEBUG
 #  else
@@ -38,6 +37,16 @@
 
 #else
 #  error Unsupported platform
+#endif
+
+#ifndef V1_OS_WIN
+#  if defined(V1_ARCH_X86)
+#    define V1_DEBUGBREAK() __asm__("int3")
+#  elif defined(V1_ARCH_ARM)
+#    define V1_DEBUGBREAK() __asm__("bkpt 42")
+#  else
+#    error unsupported architecture
+#  endif
 #endif
 
 namespace v1util {

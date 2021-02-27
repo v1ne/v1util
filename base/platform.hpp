@@ -1,5 +1,7 @@
 #pragma once
 
+/* operating systems: */
+
 #if defined(_WINDOWS) || defined(_WIN32)
 #  define V1_OS_WIN 1
 
@@ -24,5 +26,23 @@
 
 
 #else
-#  define V1_PUBLIC
+#  error unknown operating system
+#endif
+
+
+/* architectures: */
+#if defined(__x86_64__)
+#  define V1_ARCH_AMD64
+#  define V1_ARCH_X86
+#elif defined(__i386__)
+#  define V1_ARCH_X86_32
+#  define V1_ARCH_X86
+#elif defined(__aarch64__)
+#  define V1_ARCH_ARM64
+#  define V1_ARCH_ARM
+#elif defined(__arm__)
+#  define V1_ARCH_ARM32
+#  define V1_ARCH_ARM
+#else
+#  error unknown CPU architecture
 #endif
