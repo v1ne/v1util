@@ -25,6 +25,21 @@
   T& operator=(const T&) = default;  \
   T& operator=(T&&) = default;
 
+//! Non-copyable; default move constructor shortcut
+#define V1_NO_CP_DEFAULT_MV(T)              \
+  T(const T&) noexcept = delete;            \
+  T(T&&) noexcept = default;                \
+  T& operator=(const T&) noexcept = delete; \
+  T& operator=(T&&) noexcept = default;
+
+//! Non-copyable; default move & default constructor shortcut
+#define V1_NO_CP_DEFAULT_MV_CTOR(T)         \
+  T() noexcept = default;                   \
+  T(const T&) noexcept = delete;            \
+  T(T&&) noexcept = default;                \
+  T& operator=(const T&) noexcept = delete; \
+  T& operator=(T&&) noexcept = default;
+
 //! Explicitly mark a class as non-copyable, non-moveable
 #define V1_NO_CP_NO_MV(T)          \
   T(const T&) = delete;            \
