@@ -16,4 +16,5 @@
     "CMAKE_UNITY_BUILD": 1
   },
   "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+  "cmake.configureOnOpen": true,
 }

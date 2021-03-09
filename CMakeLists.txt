@@ -40,7 +40,6 @@ include_directories ("${PROJECT_SOURCE_DIR}/..")
 include_directories ("${PROJECT_SOURCE_DIR}/third-party")
 set(v1util_test_srcs ${src_files})
 list(FILTER v1util_test_srcs INCLUDE REGEX "tst_.*\\.cpp")
-list(FILTER v1util_test_srcs EXCLUDE REGEX "tst_sig.*\\.cpp") # TODO
 
 add_executable(v1util-tests ${v1util_test_srcs})
 add_dependencies(v1util-tests v1util)
