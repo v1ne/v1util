@@ -2,6 +2,8 @@
 
 #include "doctest/doctest.h"
 
+#include <memory>
+
 
 namespace v1util::test {
 class SlotOwner : public SigSlotObserver {
@@ -40,6 +42,45 @@ TEST_CASE("signal-slot easy case") {
     CHECK(fireCount == 2);
   }
   sig.fire(42);
+  CHECK(fireCount == 2);
+}
+
+TEST_CASE("signal-slot deduplicates connections, multi-disconnect doesn't crash") {
+  int fireCount = 0;
+  Signal<void(int)> sig;
+  SlotOwner slotOwner(fireCount);
+
+  sig.connect<&SlotOwner::slot>(&slotOwner);
+  sig.connect<&SlotOwner::slot>(&slotOwner);
+  sig.connect<&SlotOwner::slot>(&slotOwner);
+  sig.fire(23);
+
+  WARN(fireCount == 1);
+
+  sig.disconnect<&SlotOwner::slot>(&slotOwner);
+  sig.disconnect<&SlotOwner::slot>(&slotOwner);
+  sig.disconnect<&SlotOwner::slot>(&slotOwner);
+  sig.disconnect<&SlotOwner::slot>(&slotOwner);
+}
+
+TEST_CASE("signal-slot calls slots in connection order") {
+  int fireCount = 0;
+
+  Signal<void()> sig;
+
+  auto firer1 = [&]() {
+    ++fireCount;
+    CHECK(fireCount == 1);
+  };
+  auto firer2 = [&]() {
+    ++fireCount;
+    CHECK(fireCount == 2);
+  };
+
+  sig.connect(firer1);
+  sig.connect(firer2);
+  sig.fire();
+
   CHECK(fireCount == 2);
 }
 
