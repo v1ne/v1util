@@ -89,9 +89,9 @@ class FunctionBase {
   V1_PUBLIC size_t _refCount() const noexcept;
 
   union {
-    void* pObject = {};  // pointer to heap allocation or static data/function ptr
+    void* pObject;  // pointer to heap allocation or static data/function ptr
     alignas(kStorageAlignment) uint8_t data[kStorageSize];  // embedded storage for small Lambdas
-  } mStorage = {};
+  } mStorage = {.data = {}};
 
   static_assert(alignof(PFunctionDeleterFunc) >= 4,
       "Storing additional data in mpTrampoline requires alignment of functions pointers");
