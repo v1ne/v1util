@@ -1,12 +1,13 @@
 #pragma once
 
-#include "v1util/base/warnings.hpp"
+#if 1
+#  include "v1util/base/warnings.hpp"
 
 V1_NO_WARNINGS
-#include "v1util/third-party/nano-signal-slot/nano_function.hpp"
-#include "v1util/third-party/nano-signal-slot/nano_mutex.hpp"
-#include "v1util/third-party/nano-signal-slot/nano_observer.hpp"
-#include "v1util/third-party/nano-signal-slot/nano_signal_slot.hpp"
+#  include "v1util/third-party/nano-signal-slot/nano_function.hpp"
+#  include "v1util/third-party/nano-signal-slot/nano_mutex.hpp"
+#  include "v1util/third-party/nano-signal-slot/nano_observer.hpp"
+#  include "v1util/third-party/nano-signal-slot/nano_signal_slot.hpp"
 V1_RESTORE_WARNINGS
 
 
@@ -67,3 +68,104 @@ using Signal = Nano::Signal<Signature, Nano::TS_Policy_Safe<detail::SigSlot_NoMu
 using SigSlotObserver = Nano::Observer<Nano::TS_Policy_Safe<detail::SigSlot_NoMutex>>;
 
 }  // namespace v1util
+#else
+
+#  include "function.hpp"
+#  include "v1util/utility/scope.hpp"
+
+#  include <memory>
+#  include <vector>
+
+namespace v1util {
+namespace detail {
+  struct SignalSlotConnection {
+    // TODO: Point to non-templated base signal and use some stable reference for the connection
+  };
+}
+
+class SlotLifetimeTracker {
+ private:
+  std::vector<detail::SignalSlotConnection> mSlotConnections;
+};
+
+/* Emitter of an object where listeners (Slots) can register
+ */
+template <typename Signature>
+class Signal;
+
+template <typename RetT, typename... Args>
+class Signal<RetT(Args...)> {
+ private:
+  using FuncStorageT = Function<RetT(Args...)>;
+
+  struct Slot {
+    FuncStorageT slotFunction; 
+    SlotLifetimeTracker* pOwner = nullptr;
+    //TODO: some stable reference that identifies this connection so that pOwner can find it
+  };
+
+ public:
+  V1_NO_CP_DEFAULT_MV_CTOR(Signal);
+
+  // TODO: rename -> emit
+  void fire(Args... args) {
+    {
+      ValueScope<bool>(mInEmission, true);
+
+      for(const auto& slot : mSlots) {
+        if(slot) slot(args...);
+      }
+    }
+
+    if(!mSlotsToAdd.empty()) {
+      mSlots.insert(mSlots.end(),
+          std::make_move_iterator(mSlotsToAdd.begin()),
+          std::make_move_iterator(mSlotsToAdd.end()));
+      mSlotsToAdd.clear();
+    }
+  }
+
+  template <auto pMemFn, typename Owner>
+  void connect(Owner* pSlotOwner) {
+    connect(FuncStorageT::template bind<pMemFn>(pSlotOwner),
+        std::is_base_of_v<SlotLifetimeTracker, Owner>
+            ? static_cast<SlotLifetimeTracker*>(pSlotOwner)
+            : nullptr);
+  }
+
+  template <typename Functor>
+  void connect(Functor&& f) {
+    connect(FuncStorageT(f), nullptr);
+  }
+
+
+  template <auto pMemFn, typename Arg>
+  void disconnect(Arg pSlotOwner) {}
+  void disconnect_all(){};
+
+ private:
+  void connect(Function<RetT(Args...)>&& function, SlotLifetimeTracker* pOwner) {
+    if(!mInEmission) {
+      mSlots.emplace_back(std::move(function));
+    } else {
+      mSlotsToAdd.emplace_back(std::move(function));
+    }
+
+    if(pOwner)
+      notifyOwnerAboutConnection(
+          pOwner, nullptr /* TODO: Bad idea. Track connection differently. */);
+  }
+
+  void notifyOwnerAboutConnection(SlotLifetimeTracker* pOwner, void* pMemFn) {}
+  void notifyOwnerAboutDisconnection(SlotLifetimeTracker* pOwner, void* pMemFn) {}
+
+  std::vector<Slot> mSlots;
+  std::vector<Slot> mSlotsToAdd;
+  bool mInEmission = false;
+};
+
+#  define SigSlotObserver SlotLifetimeTracker
+}  // namespace v1util
+
+
+#endif
