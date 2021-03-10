@@ -19,6 +19,10 @@ static int sStaticFunction23() {
   return 23;
 }
 
+static int sStaticFunction42() {
+  return 42;
+}
+
 class TriviallyCopyableCallable {
  public:
   TriviallyCopyableCallable(int x) : mMember(x) {}
@@ -102,6 +106,7 @@ class Klaas {
 
   int memberFunc(int arg1, const int& arg2) { return arg1 + arg2 + mMember; }
   int memberFunc23() { return 23; }
+  int memberFunc42() { return 42; }
 
   int mMember;
 };
@@ -334,6 +339,44 @@ TEST_CASE("function-callable-refcounting") {
     CHECK(counters == HeapBasedCallable::OpCounters{1, 1, 1, 0});
   }
   CHECK(counters == HeapBasedCallable::OpCounters{1, 2, 1, 0});
+}
+
+TEST_CASE("function-equality") {
+  SUBCASE("empty") {
+    CHECK(Function<int()>() == Function<int()>());
+    CHECK(!(Function<int()>() != Function<int()>()));
+  }
+
+  SUBCASE("static") {
+    auto f23 = Function<int()>(&sStaticFunction23);
+    auto f42 = Function<int()>(&sStaticFunction42);
+
+    CHECK(f23 == f23);
+    CHECK(f23 != f42);
+
+    CHECK(f23 == Function<int()>(&sStaticFunction23));
+    CHECK(f42 != Function<int()>(&sStaticFunction23));
+
+    auto f23Copy = f23;
+    CHECK(f23 == f23Copy);
+  }
+
+
+  SUBCASE("fast member functions") {
+    const auto fStatic = Function<int()>(&sStaticFunction23);
+
+    Klaas k{66}, j{99};
+    const auto fMemFnK = Function<int()>::bind<&Klaas::memberFunc23>(&k);
+    const auto fMemFnJ = Function<int()>::bind<&Klaas::memberFunc23>(&j);
+
+    CHECK(fMemFnK != fMemFnJ);
+    CHECK(fMemFnK != fStatic);
+    CHECK(fMemFnK == Function<int()>::bind<&Klaas::memberFunc23>(&k));
+    CHECK(fMemFnK != Function<int()>::bind<&Klaas::memberFunc42>(&k));
+
+    auto fMemFnKCopy = fMemFnK;
+    CHECK(fMemFnK == fMemFnKCopy);
+  }
 }
 
 

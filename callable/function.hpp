@@ -294,6 +294,23 @@ class Function<RetType(Args...)> : detail::FunctionBase {
   inline bool isHeapBased() const noexcept { return mpTrampoline && hasHeapObject(); }
   inline size_t _refCount() const noexcept { return FunctionBase::_refCount(); }
 
+  /* Equality for functors, if possible
+   *
+   * This only works reliably if a and b:
+   * * are empty
+   * * point to member functions using bindMemFnFast
+   * * point to free functions
+   *
+   * In other cases, it can produce false negatives.
+   */
+  inline friend bool operator==(const Function& a, const Function& b) {
+    return a.mpTrampoline == b.mpTrampoline
+           && (a.isHeapBased()
+                   ? a.storage() == b.storage()
+                   : !std::memcmp(a.mStorage.data, b.mStorage.data, FunctionBase::kStorageSize));
+  }
+  inline friend bool operator!=(const Function& a, const Function& b) { return !operator==(a, b); }
+
  private:
   using PTrampolineType = RetType (*)(void*, Args...);
 
