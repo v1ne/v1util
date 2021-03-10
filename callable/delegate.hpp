@@ -247,8 +247,8 @@ class Delegate<RetType(Args...)> {
 #endif
 
 
-  operator bool() const noexcept { return mpTrampoline; }
-  void* target() const noexcept { return mpObject; }
+  inline explicit operator bool() const noexcept { return mpTrampoline; }
+  inline void* target() const noexcept { return mpObject; }
 
  private:
   using PTrampolineType = RetType (*)(void*, Args...);

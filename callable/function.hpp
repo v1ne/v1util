@@ -290,7 +290,7 @@ class Function<RetType(Args...)> : detail::FunctionBase {
     return typedTrampoline()(storage(), std::forward<Args>(args)...);
   }
 
-  inline operator bool() const noexcept { return mpTrampoline; }
+  inline explicit operator bool() const noexcept { return mpTrampoline; }
   inline bool isHeapBased() const noexcept { return mpTrampoline && hasHeapObject(); }
   inline size_t _refCount() const noexcept { return FunctionBase::_refCount(); }
 
