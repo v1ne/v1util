@@ -294,7 +294,7 @@ class Function<RetType(Args...)> : detail::FunctionBase {
   inline bool isHeapBased() const noexcept { return mpTrampoline && hasHeapObject(); }
   inline size_t _refCount() const noexcept { return FunctionBase::_refCount(); }
 
-  /** Equality for functors, if possible
+  /** Equality for functors, if possible (see Delegate::operator== for details)
    *
    * This only works reliably if a and b:
    * * are empty
