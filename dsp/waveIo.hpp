@@ -20,7 +20,7 @@ struct WaveInfo {
   inline bool isValid() const { return numChannels > 0 && sampleRate > 0.; }
 };
 
-/*! Blocking RIFF Wave ("WAV") reader
+/** Blocking RIFF Wave ("WAV") reader
  *
  * Caveat: This is just a bare-bones implementation.
  */
@@ -58,7 +58,7 @@ class WaveReader {
   unsigned int mSamplePos = 0U;
 };
 
-/*! Blocking RIFF Wave ("WAV") writer
+/** Blocking RIFF Wave ("WAV") writer
  *
  * Caveat: This is just a bare-bones implementation.
  */

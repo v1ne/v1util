@@ -8,7 +8,7 @@
 #include <numeric>
 
 
-/*! Poor Man's Range routines
+/** Poor Man's Range routines
  *
  * A stop-gap measure to make C++ more bearable by writing less code that deals
  * with individual iterators.

@@ -380,7 +380,7 @@ TEST_CASE("function-equality") {
 }
 
 
-/*! Tests for the special case mentioned in Function::bindMemFn
+/** Tests for the special case mentioned in Function::bindMemFn
  *
  * MSVC has an "interesting" ABI for member function calls. These tests ensure
  * that Function does the right thing even on MSVC with non-void/integral return types.

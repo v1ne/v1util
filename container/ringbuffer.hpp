@@ -7,7 +7,7 @@
 
 namespace v1util {
 
-/*! SPSC queue
+/** SPSC queue
  *
  * TODO: use std::atomic acquire/release (currently works only on x64 because of luck)
  */
@@ -176,7 +176,7 @@ class ChunkedRingBuffer {
 };
 
 
-/*! Bare-bones deque that doesn't dynamically allocate memory */
+/** Bare-bones deque that doesn't dynamically allocate memory */
 template <typename T>
 class FixedSizeDeque : public ChunkedRingBuffer<T> {
   using ChunkedRingBuffer<T>::mCapacity;
@@ -220,7 +220,7 @@ class FixedSizeDeque : public ChunkedRingBuffer<T> {
 };
 
 
-/*! An iterator that treats the underlying container as a ring
+/** An iterator that treats the underlying container as a ring
  *
  * This means that you can walk indefinitely into both directions (until int64_t is exceeded),
  * without hitting the end. It is useful if you don't want to model the underlying container

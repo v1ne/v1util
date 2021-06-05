@@ -345,7 +345,7 @@ class DerivedWithDtorCallback : public BaseWithDtorCallback {
   DtorCallback mOnDerivedDestruction;
 };
 
-/*! Delegates have special behaviour when classes w/ virtual methods are destroyed.
+/** Delegates have special behaviour when classes w/ virtual methods are destroyed.
  *
  * Depending on your platform and optimization setting, the results for methods bound
  * at construction time and delegates called during destruction on virtual methods
@@ -392,7 +392,7 @@ TEST_CASE("delegate-virtual-destruction") {
 }
 
 
-/*! Tests for the special case mentioned in Delegate::bindMemFn
+/** Tests for the special case mentioned in Delegate::bindMemFn
  *
  * MSVC has an "interesting" ABI for member function calls. These tests ensure
  * that Delegate does the right thing even on MSVC with non-void/integral return types.

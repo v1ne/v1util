@@ -11,7 +11,7 @@
 
 namespace v1util::dsp {
 
-/*! Find the biggest peak in the given range (@p iBegin, @p iEnd]
+/** Find the biggest peak in the given range (@p iBegin, @p iEnd]
  *
  * A peak is the first largest element in the sequence or the middle element of the first
  * plateau of largest elements in the sequence.
@@ -40,7 +40,7 @@ Iter findPeak(Iter iBegin, Iter iEnd) {
 }
 
 
-/*! Return whether a plateau exceeds @p maxPlateauSize
+/** Return whether a plateau exceeds @p maxPlateauSize
  *
  * One criterion for a peak is that it is surrounded by smaller elements. The same must hold for a
  * peak. If a plateau consists of more samples than @p maxPlateauSize, it is assumed to be larger
@@ -61,7 +61,7 @@ bool isPlateauTooLong(I iPeak, I iBegin, I iEnd, size_t maxPlateauSize) {
 }
 
 
-/*! Pair of absolute stream position and value.
+/** Pair of absolute stream position and value.
  *
  * All stream positions are valid, in-band signalling can only happen via tag values
  * in @p value.
@@ -85,7 +85,7 @@ struct PeakFinderRawPeak : public PeakFinderValueAtPos<Value> {
 };
 
 
-/*! Find raw peaks and plateaus in a stream of data, latency
+/** Find raw peaks and plateaus in a stream of data, latency
  *
  * A raw peak is a local maximum or the middle element of a plateau consisting of local maxima.
  * A raw peak or plateau must be surrounded by elements of strictly smaller value.
@@ -110,7 +110,7 @@ class StreamingPeakDetector {
   }
   V1_DEFAULT_CP_MV(StreamingPeakDetector);
 
-  /*! Process a block of data
+  /** Process a block of data
    *
    * @p peakHandler(PeakFinderValueAtPos<Value>) is called for every peak that satisfied the
    * aforementioned criteria.
@@ -187,7 +187,7 @@ class StreamingPeakDetector {
 };
 
 
-/*! Transform an input sequence to a sequence of windowed maxima. */
+/** Transform an input sequence to a sequence of windowed maxima. */
 template <typename Value>
 class SlidingWindowLocalMaximaFinder {
  public:
@@ -198,7 +198,7 @@ class SlidingWindowLocalMaximaFinder {
   }
   V1_DEFAULT_CP_MV(SlidingWindowLocalMaximaFinder);
 
-  /*! Add a new sample.
+  /** Add a new sample.
    *
    * @p value: The value of the sample
    * @return the last maximum (delayed) or the smallest value if the maximum isn't available yet.
@@ -224,7 +224,7 @@ class SlidingWindowLocalMaximaFinder {
     return retval;
   }
 
-  /*! Return the last local maximum, if available */
+  /** Return the last local maximum, if available */
   Value finalize() {
     return mMaximumCandidates.empty() ? std::numeric_limits<Value>::min()
                                       : mMaximumCandidates.front().value;
@@ -246,7 +246,7 @@ class SlidingWindowLocalMaximaFinder {
 };
 
 
-/*! Fed with a sequence of raw peaks, filter dominant peaks.
+/** Fed with a sequence of raw peaks, filter dominant peaks.
  *
  * This is very similar to finding local maxima, but still different:
  * - The same peak may only be returned at most once.
@@ -267,7 +267,7 @@ class SlidingWindowDominantPeakIsolator {
   }
   V1_DEFAULT_CP_MV(SlidingWindowDominantPeakIsolator);
 
-  /*! Add a new raw peak.
+  /** Add a new raw peak.
    *
    * The timeline is taken from @p sample.streamPos, which is considered to be
    * a steady clock.
@@ -306,7 +306,7 @@ class SlidingWindowDominantPeakIsolator {
     cleanOldRightDominantPeaks(now, dominantPeakHandler);
   }
 
-  /*! Process queued peaks, assuming no further peaks have arrived up until @p streamPos
+  /** Process queued peaks, assuming no further peaks have arrived up until @p streamPos
    *
    * @p streamPos may be in the past up to mWindowSize samples.
    */
@@ -336,7 +336,7 @@ class SlidingWindowDominantPeakIsolator {
     cleanOldRightDominantPeaks(streamPos, dominantPeakHandler);
   }
 
-  /*! Fix boundary condition to lock-out peaks after local max. at very first element
+  /** Fix boundary condition to lock-out peaks after local max. at very first element
    *
    * The peak detector rightfully ignores it, but the isolator needs to know about it
    * to suppress subsequent raw peaks, since such a maximum locks out later peaks.
@@ -361,7 +361,7 @@ class SlidingWindowDominantPeakIsolator {
     }
   }
 
-  /*! Check that a given right-dominant peak is also left-dominant and only then accept it.
+  /** Check that a given right-dominant peak is also left-dominant and only then accept it.
    *
    * A left-dominant peak must be bigger than all the peaks that came before in time (i.e. left of
    * it) within mWindowSize. Equal value is not enough on the left side because a proper peak is
@@ -403,14 +403,14 @@ class SlidingWindowDominantPeakIsolator {
 
   // non-const:
 
-  /*! queue for peaks which are dominant on the right side
+  /** queue for peaks which are dominant on the right side
    *
    * i.e. they are bigger than or equal to raw peaks that come later in time within mWindowSize
    */
   FixedSizeDeque<PeakFinderRawPeak<Value>> mRightDominantPeaks;
 
 
-  /*! Memory of past (right- and total) dominant peaks
+  /** Memory of past (right- and total) dominant peaks
    *
    * Used to check right-dominant peaks against to ensure that they are also left-dominant.
    */
@@ -422,7 +422,7 @@ class SlidingWindowDominantPeakIsolator {
 };
 
 
-/*! Find peaks: Samples that are the largest within a certain window in a stream of data
+/** Find peaks: Samples that are the largest within a certain window in a stream of data
  *
  * Greedily finds peaks that dominate all other peaks within +/- lockoutDistance :=
  * floor(patternSize/2) samples around it. A peak is either a local maximum, i.e. an element

@@ -11,7 +11,7 @@
 
 namespace v1util {
 
-/*! A non-owning reference to a type-erased function
+/** A non-owning reference to a type-erased function
  *
  * Sometimes this is called a delegate, sometimes it's a FunctionView, non-owning callback, ...
  *
@@ -49,7 +49,7 @@ class Delegate<RetType(Args...)> {
     };
   }
 
-  /*! Construct from a Callable
+  /** Construct from a Callable
    *
    * This is one of the few exceptions where a single-argument non-explicit constructor
    * is used.
@@ -83,7 +83,7 @@ class Delegate<RetType(Args...)> {
   // clang-format on
 
 
-  /*! Bind to a member function.
+  /** Bind to a member function.
    *
    * It tries to avoid jumping through an additional trampoline, unless it's forced to,
    * on Windows.
@@ -116,7 +116,7 @@ class Delegate<RetType(Args...)> {
   }
 
 
-  /*! Bind to a class + member function, going the fast route
+  /** Bind to a class + member function, going the fast route
    *
    * This means that no trampoline is used, assuming we know where to jump.
    * This requires special support for every platform ABI.
@@ -153,7 +153,7 @@ class Delegate<RetType(Args...)> {
   }
 
 
-  /*! Construct from a class + member function, always giving standard-conformant behaviour
+  /** Construct from a class + member function, always giving standard-conformant behaviour
    *
    * This binding calls the expected target, as in standard C++. Not the fastest,
    * but the safest.

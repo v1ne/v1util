@@ -5,7 +5,7 @@
 #include <atomic>
 
 namespace v1util {
-/*! A simple RAII object that sets a variable to a given value for as long as the object exists.
+/** A simple RAII object that sets a variable to a given value for as long as the object exists.
  *
  * The object is reset to its original value on destruction.
  */
@@ -24,7 +24,7 @@ class AtomicValueScope {
   typename AtomicT::value_type mOldValue;
 };
 
-/*! A simple RAII object that treats a variable as ref counter
+/** A simple RAII object that treats a variable as ref counter
  *
  * The object incrmeents the ref count on construction and decrements it on destruction.
  * See scope.hpp for non-atomic variants.

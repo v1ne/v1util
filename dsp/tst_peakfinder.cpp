@@ -50,7 +50,7 @@ inline doctest::String toString(const v1util::ArrayView<T>& view) {
 namespace v1util::dsp::test {
 
 
-/*! Slow reference implementation of a streaming peak finder
+/** Slow reference implementation of a streaming peak finder
  *
  * Greedily finds peaks that dominate all other peaks within +/- patternSize/2 samples around it.
  * A peak is either a local maximum, i.e. an element surrounded by a smaller element on both

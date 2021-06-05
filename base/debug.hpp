@@ -54,7 +54,7 @@ V1_PUBLIC bool isDebuggerPresent();
 V1_PUBLIC void printfToDebugger(const char* pFormat...);
 }  // namespace v1util
 
-/*! Assert that x is true, also in release mode.
+/** Assert that x is true, also in release mode.
  *
  * Halts in the debugger, if attached. Otherwise, terminates the program.
  */
@@ -77,7 +77,7 @@ V1_PUBLIC void printfToDebugger(const char* pFormat...);
     } while(false)
 #endif
 
-/*! Assume that "x" is true, instruct the compiler/analyzer to think the same.
+/** Assume that "x" is true, instruct the compiler/analyzer to think the same.
  *
  * This is checked in debug mode, but not in release mode. There, you have to know
  * that your assumption holds because the optimizer will use this knowledge!

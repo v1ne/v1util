@@ -13,7 +13,7 @@ V1_RESTORE_WARNINGS
 namespace v1util {
 
 namespace detail {
-/*! By making the mutex a no-op, the SigSlot mechanism becomes single-threaded,
+/** By making the mutex a no-op, the SigSlot mechanism becomes single-threaded,
  * but safe to use on dying class instances. Still, disconnecting an observer
  * won't take effect immediately, but only after any current emission has ended.
  */
@@ -42,7 +42,7 @@ class SigSlot_NoMutex {
  * - output iterator for return values
  **********************************************************/
 
-/*! single-threaded signal (reentrant-safe for dying class instances)
+/** single-threaded signal (reentrant-safe for dying class instances)
  *
  * Danger: During the delivery of a signal, disconnecting a slot has no effect.
  * The signal will still be delivered to that slot. It's only disconnected for the
@@ -54,7 +54,7 @@ class SigSlot_NoMutex {
 template <typename Signature>
 using Signal = Nano::Signal<Signature, Nano::TS_Policy_Safe<detail::SigSlot_NoMutex>>;
 
-/*! signle-threaded slot owner w/ automatic disconnect on destruction
+/** signle-threaded slot owner w/ automatic disconnect on destruction
  * (reentrant-safe for dying class instances)
  *
  * Danger: During the delivery of a signal, disconnecting a slot has no effect.

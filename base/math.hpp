@@ -14,7 +14,7 @@ static constexpr double kSqrt2 = 1.41421356237309504880;
 static constexpr float kfSqrt2 = 1.41421356237309504880f;
 
 
-/*! Return the Alpha for a moving average that needs @p stepsToReach63 steps to reach 1-1/e
+/** Return the Alpha for a moving average that needs @p stepsToReach63 steps to reach 1-1/e
  *
  * The Alpha leads to a moving average that goes from 0 to 1-1/e (63%) for a unity step (0->1)
  * input in @p stepsToReach63 steps.
@@ -26,7 +26,7 @@ inline Num alphaForExpAvgFromSteps(Num stepsToReach63) {
   return Num(1) - std::exp(-Num(1) / stepsToReach63);
 }
 
-/*! Return the Alpha for a moving average that needs @p stepsToReachTarget steps to reach @p
+/** Return the Alpha for a moving average that needs @p stepsToReachTarget steps to reach @p
  * targetAmount
  *
  * The Alpha leads to a moving average that goes from 0 to @p targetAmount for a unity step (0->1)
@@ -42,7 +42,7 @@ inline Num alphaForExpAvgFromStepsToAmount(Num stepsToReachTarget, Num targetAmo
   return Num(1 - std::exp(1 / Num(stepsToReachTarget) * std::log(Num(1) - targetAmount)));
 }
 
-/*! Apply exponential smoothing / exponential moving average to @p pCurrentValue
+/** Apply exponential smoothing / exponential moving average to @p pCurrentValue
  *
  * @p alpha is the exponential smoothing alpha, as usual and as returned by alphaForExpAvgFromSteps
  * or alphaForExpAvgFromSteps. The value @p newValue is incorporated into @p pCurrentValue.
@@ -66,7 +66,7 @@ inline Int ceilIntDiv(Int dividend, Int divisor) {
 }
 
 
-/*! Return smaller signed distance a-b for unsigned numbers @p a, @p b.
+/** Return smaller signed distance a-b for unsigned numbers @p a, @p b.
  *
  * It operates on the unsigned ring and returns the smaller distance between
  * the two, taking the direction into consideration. Actually, it's just subtraction.
@@ -76,7 +76,7 @@ inline auto ringDistance(UInt a, UInt b) {
   return std::make_signed_t<UInt>(a - b);
 }
 
-/*! probe > reference: Dedice whether @p probe does not precede @p reference in the ring.
+/** probe > reference: Dedice whether @p probe does not precede @p reference in the ring.
  *
  * It is the decision counter-part to @see ringDistance.
  * The ring is split in half at @p reference. The first half starts at

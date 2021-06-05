@@ -105,7 +105,7 @@ class FunctionBase {
 }  // namespace detail
 
 
-/*! An owning reference to a type-erased function.
+/** An owning reference to a type-erased function.
  *
  * Like std::function as of C++17, just with reduced functionality. Differences:
  * - move operations may+do not throw
@@ -173,7 +173,7 @@ class Function<RetType(Args...)> : detail::FunctionBase {
   // clang-format on
 
 
-  /*! Bind to a member function.
+  /** Bind to a member function.
    *
    * It tries to avoid jumping through an additional trampoline, unless it's forced to,
    * on Windows.
@@ -206,7 +206,7 @@ class Function<RetType(Args...)> : detail::FunctionBase {
   }
 
 
-  /*! Bind to a class + member function, going the fast route
+  /** Bind to a class + member function, going the fast route
    *
    * This means that no trampoline is used, assuming we know where to jump.
    * This requires special support for every platform ABI.
@@ -243,7 +243,7 @@ class Function<RetType(Args...)> : detail::FunctionBase {
   }
 
 
-  /*! Construct from a class + member function, always giving standard-conformant behaviour
+  /** Construct from a class + member function, always giving standard-conformant behaviour
    *
    * This binding calls the expected target, as in standard C++. Not the fastest,
    * but the safest.
@@ -294,7 +294,7 @@ class Function<RetType(Args...)> : detail::FunctionBase {
   inline bool isHeapBased() const noexcept { return mpTrampoline && hasHeapObject(); }
   inline size_t _refCount() const noexcept { return FunctionBase::_refCount(); }
 
-  /* Equality for functors, if possible
+  /** Equality for functors, if possible
    *
    * This only works reliably if a and b:
    * * are empty
